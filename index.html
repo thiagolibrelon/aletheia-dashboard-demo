@@ -412,7 +412,11 @@ tbody tr:hover td{background:var(--bg-dn)}
 /* ══════════════════════════════════════════════════════
    RESPONSIVE
 ══════════════════════════════════════════════════════ */
-@media(max-width:1024px){
+.mnav-btn{display:none}
+.mbackdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:150}
+.mbackdrop.show{display:block}
+
+@media(max-width:1024px) and (min-width:769px){
   :root{--sw:64px}
   .sidebar .nl,.sidebar .st,.sidebar .ss,.sidebar .nsl,.sidebar .sft{display:none}
   .sidebar .ni{justify-content:center;padding:10px}
@@ -421,7 +425,11 @@ tbody tr:hover td{background:var(--bg-dn)}
 }
 @media(max-width:768px){
   .main{margin-left:0}
-  .sidebar{transform:translateX(-100%)}
+  .sidebar{transform:translateX(-100%);z-index:200;box-shadow:var(--sh-lg);transition:transform .2s ease}
+  .sidebar.mopen{transform:translateX(0)}
+  .stoggle{display:none}
+  .mnav-btn{display:flex}
+  .top-badge,.tdiv{display:none}
   .kpi-grid,.g2,.g3,.hgrid{grid-template-columns:1fr}
   .hcard.s2,.hcard.s3{grid-column:span 1}
 }
@@ -602,12 +610,15 @@ tbody tr:hover td{background:var(--bg-dn)}
   </div>
 </aside>
 
+<div class="mbackdrop" id="mbackdrop" onclick="closeMobileNav()"></div>
+
 <!-- ════════════════════════════════════════════
      MAIN
 ════════════════════════════════════════════ -->
 <div class="main" id="main">
 
   <header class="topbar">
+    <button class="bicon mnav-btn" onclick="toggleMobileNav()" title="Menu">☰</button>
     <div class="bc">
       <span>Aletheia</span>
       <span class="bc-sep">›</span>
@@ -2492,6 +2503,16 @@ function toggleSidebar() {
   document.getElementById('main').classList.toggle('exp', collapsed);
 }
 
+// ── MOBILE NAV DRAWER ───────────────────────────────
+function toggleMobileNav() {
+  document.getElementById('sidebar').classList.toggle('mopen');
+  document.getElementById('mbackdrop').classList.toggle('show');
+}
+function closeMobileNav() {
+  document.getElementById('sidebar').classList.remove('mopen');
+  document.getElementById('mbackdrop').classList.remove('show');
+}
+
 // ── NAVIGATION ────────────────────────────────────
 function nav(id, btn) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -2500,6 +2521,7 @@ function nav(id, btn) {
   if (p) p.classList.add('active');
   if (btn) btn.classList.add('active');
   document.getElementById('bc').textContent = LABELS[id] || id;
+  closeMobileNav();
   if (id === 'vendas')    { drawVendasTrend(); drawCategoria(); }
   if (id === 'projecao')  drawProjecao();
   if (id === 'sac')       { drawSacDesfecho(); drawSacMotivos(); }
